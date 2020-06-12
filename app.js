@@ -27,6 +27,7 @@ const getBestMatch = (arr) => {
     let bestResult;
     let index;
 
+    logger('Finding best match.');
     arr.forEach(el => {
         if (el.rating > bestPercentage) {
             bestPercentage = el.rating;
@@ -45,7 +46,7 @@ const writeDataToCSV = (obj) => {
                 return rej(err);
             }
 
-            const stream = writeFile('./output/output.csv', csvInfo, (err) => {
+            writeFile('./output/output.csv', csvInfo, (err) => {
                 if (err) {
                     return rej(err);
                 }
