@@ -14,6 +14,7 @@ const { findBestMatch } = require('string-similarity');
 const { writeFile } = require('fs');
 
 const sentenceFilters = ["does", "isn't", "it's", "into", "in", "is", "it"];
+const stringMatchPercentage = 40;
 
 // Logger method
 const logger = (message) => {
@@ -89,7 +90,7 @@ const main = async () => {
                 const matchPercentage = Math.round(match.rating * 100);
                 logger(`Match percentage => ${matchPercentage}, sentence => ${match.target}`);
 
-                if (matchPercentage >= 40) {
+                if (matchPercentage >= stringMatchPercentage) {
                     match.rating = matchPercentage;
                     match.index = newTitles.indexOf(match.target)
                     return match;
