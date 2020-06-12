@@ -22,8 +22,9 @@
   },
   "homepage": "https://github.com/manasnilarout/data-comparator#readme",
   "dependencies": {
+    "@google-cloud/translate": "^6.0.0",
     "csvtojson": "^2.0.10",
-    "google-translate": "^3.0.0",
+    "dotenv": "^8.2.0",
     "jsonexport": "^3.0.0",
     "string-similarity": "^4.0.1"
   }

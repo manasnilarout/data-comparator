@@ -1,24 +1,31 @@
+require('dotenv').config()
+
 /**
  * 1. Read CSV and create JSON objects out of it.
  * 2. Find similar sentences.
- * 3. Find best match from similar sentences.
- * 4. Log the similar ones as per the search term.
- * 5. Remove other best matches.
- * 6. Repeat till all the duplicates are removed.
- * 7. Write final info to new CSV in output directory.
+ * 3. Convert all the titles to english for comparison.
+ * 4. Find best match from similar sentences.
+ * 5. Log the similar ones as per the search term.
+ * 6. Remove other best matches.
+ * 7. Repeat till all the duplicates are removed.
+ * 8. Write final info to new CSV in output directory.
  */
 
 const csv = require('csvtojson');
 const jsonexport = require('jsonexport');
 const { findBestMatch } = require('string-similarity');
+const { Translate } = require('@google-cloud/translate').v2;
+
 const { writeFile } = require('fs');
 
+const translator = new Translate({ projectId: process.env.PROJECT_ID })
 const sentenceFilters = ["does", "isn't", "it's", "into", "in", "is", "it"];
 const stringMatchPercentage = 40;
+const defaultLanguage = 'en';
 
 // Logger method
 const logger = (message) => {
-    console.log(`[${new Date().toString()}]: ${message}`);
+    console.log(`[${new Date().toISOString()}]: ${message}`);
 }
 
 // Find the best match from given array
@@ -63,11 +70,20 @@ const main = async () => {
         logger('Started execution');
         const filePath = './input/sample.csv';
         let articles = await csv().fromFile(filePath);
+        const clonedArticles = JSON.parse(JSON.stringify(articles));
+
+        for (const article of clonedArticles) {
+            if (article.language !== 'english') {
+                const [translation] = await translator.translate(article.title, defaultLanguage);
+                logger(`Translating ${article.language} to English.\nOriginal => ${article.title}\nTranslated => ${translation}`);
+                article.title = translation;
+            }
+        }
 
         const newTitles = [];
 
         // Collect all articles
-        const titles = articles.map(article => {
+        const titles = clonedArticles.map(article => {
             let str = article.title;
 
             sentenceFilters.forEach(filter => {
@@ -102,7 +118,7 @@ const main = async () => {
                 duplicatesPresence = false;
             }
 
-            logger('Search finished.');
+            logger('Search finished.\n--------------\n');
 
             const bestMatch = getBestMatch(bestMatches);
 
@@ -112,14 +128,14 @@ const main = async () => {
 
                 if (idx !== bestMatch.index) {
                     articles.splice(idx, 1);
+                    clonedArticles.splice(idx, 1);
                     newTitles.splice(idx, 1);
                 }
             }
 
             mainIndex = bestMatch.index + 1;
-            console.log(mainIndex, articles.length);
 
-            if (mainIndex >= articles.length) {
+            if (mainIndex >= clonedArticles.length) {
                 duplicatesPresence = false;
             }
         }

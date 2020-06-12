@@ -107,3 +107,9 @@ dist
 # Outputs and inputs directory
 output/
 input/
+
+# Env file
+.env
+
+# Google service account file
+serviceAccount.json
