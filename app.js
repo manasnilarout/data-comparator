@@ -3,10 +3,15 @@
  * 2. Find similar sentences.
  * 3. Find best match from similar sentences.
  * 4. Log the similar ones as per the search term.
+ * 5. Remove other best matches.
+ * 6. Repeat till all the duplicates are removed.
+ * 7. Write final info to new CSV in output directory.
  */
 
 const csv = require('csvtojson');
+const jsonexport = require('jsonexport');
 const { findBestMatch } = require('string-similarity');
+const { writeFile } = require('fs');
 
 const sentenceFilters = ["does", "isn't", "it's", "into", "in", "is", "it"];
 
@@ -32,10 +37,29 @@ const getBestMatch = (arr) => {
     return { bestPercentage, bestResult, index };
 }
 
+const writeDataToCSV = (obj) => {
+    return new Promise(async (res, rej) => {
+        jsonexport(obj, (err, csvInfo) => {
+            if (err) {
+                return rej(err);
+            }
+
+            const stream = writeFile('./output/output.csv', csvInfo, (err) => {
+                if (err) {
+                    return rej(err);
+                }
+
+                logger('Writing to CSV succeeded.');
+                res();
+            });
+        })
+    })
+}
+
 const main = async () => {
     try {
         logger('Started execution');
-        const filePath = './sample.csv';
+        const filePath = './input/sample.csv';
         let articles = await csv().fromFile(filePath);
 
         const newTitles = [];
@@ -98,7 +122,8 @@ const main = async () => {
             }
         }
 
-        console.log(articles);
+        await writeDataToCSV(articles);
+
     } catch (err) {
         console.error(err);
     }
