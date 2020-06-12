@@ -1,0 +1,29 @@
+{
+  "name": "data-comparator",
+  "version": "1.0.0",
+  "description": "Translation and comparision",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manasnilarout/data-comparator.git"
+  },
+  "keywords": [
+    "news",
+    "translation",
+    "search"
+  ],
+  "author": "Manas Ranjan Nilorout",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manasnilarout/data-comparator/issues"
+  },
+  "homepage": "https://github.com/manasnilarout/data-comparator#readme",
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "google-translate": "^3.0.0",
+    "string-similarity": "^4.0.1"
+  }
+}
