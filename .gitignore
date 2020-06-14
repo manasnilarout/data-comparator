@@ -107,6 +107,7 @@ dist
 # Outputs and inputs directory
 output/
 input/
+uplodas/
 
 # Env file
 .env

@@ -22,10 +22,17 @@ const translator = new Translate({ projectId: process.env.PROJECT_ID })
 const sentenceFilters = ["does", "isn't", "it's", "into", "in", "is", "it"];
 const stringMatchPercentage = 40;
 const defaultLanguage = 'en';
+let socket;
 
 // Logger method
 const logger = (message) => {
     console.log(`[${new Date().toISOString()}]: ${message}`);
+
+    if (socket) {
+        socket.emit('logs', {
+            message
+        });
+    }
 }
 
 // Find the best match from given array
@@ -53,29 +60,30 @@ const writeDataToCSV = (obj) => {
                 return rej(err);
             }
 
-            writeFile('./output/output.csv', csvInfo, (err) => {
+            const outputFile = './output/output.csv'
+            writeFile(outputFile, csvInfo, (err) => {
                 if (err) {
                     return rej(err);
                 }
 
                 logger('Writing to CSV succeeded.');
-                res();
+                return res(outputFile);
             });
         })
     })
 }
 
-const main = async () => {
+const main = async (filePath) => {
     try {
         logger('Started execution');
-        const filePath = './input/sample.csv';
-        let articles = await csv().fromFile(filePath);
+        logger(`File path => ${filePath}`)
+        let articles = await csv().fromFile(filePath || './input/sample.csv');
         const clonedArticles = JSON.parse(JSON.stringify(articles));
 
         for (const article of clonedArticles) {
             if (article.language !== 'english') {
                 const [translation] = await translator.translate(article.title, defaultLanguage);
-                logger(`Translating ${article.language} to English.\nOriginal => ${article.title}\nTranslated => ${translation}`);
+                logger(`Translating ${article.language} to English.\n| Original => ${article.title}\nTranslated => ${translation}`);
                 article.title = translation;
             }
         }
@@ -118,7 +126,7 @@ const main = async () => {
                 duplicatesPresence = false;
             }
 
-            logger('Search finished.\n--------------\n');
+            logger('Search finished.');
 
             const bestMatch = getBestMatch(bestMatches);
 
@@ -140,11 +148,17 @@ const main = async () => {
             }
         }
 
-        await writeDataToCSV(articles);
-
+        return await writeDataToCSV(articles);
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }
 
-main();
+const registerSocket = (socketInstance) => {
+    if (socketInstance) {
+        logger('Registering socket');
+        socket = socketInstance;
+    }
+}
+
+module.exports = { main, registerSocket };

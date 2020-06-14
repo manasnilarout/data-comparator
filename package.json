@@ -1,7 +1,7 @@
 {
   "name": "data-comparator",
   "version": "1.0.0",
-  "description": "Translation and comparision",
+  "description": "Translation and comparison",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,9 +23,13 @@
   "homepage": "https://github.com/manasnilarout/data-comparator#readme",
   "dependencies": {
     "@google-cloud/translate": "^6.0.0",
+    "body-parser": "^1.19.0",
     "csvtojson": "^2.0.10",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "jsonexport": "^3.0.0",
+    "multer": "^1.4.2",
+    "socket.io": "^2.3.0",
     "string-similarity": "^4.0.1"
   }
 }
