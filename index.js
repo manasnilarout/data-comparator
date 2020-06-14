@@ -9,6 +9,7 @@ const { registerSocket, main } = require('./app');
 
 const ROUTES = {
     OUTPUT_FILES: '/output',
+    INPUT_FILES: '/input',
     APP: '/app',
     ROOT: '/',
     UPLOAD: '/articles'
@@ -30,6 +31,7 @@ const app = express();
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(ROUTES.OUTPUT_FILES, express.static('./output'));
+app.use(ROUTES.INPUT_FILES, express.static('./input'));
 app.use(ROUTES.APP, express.static('./html'));
 
 const server = app.listen(Number(process.env.PORT) || 3000, () => {

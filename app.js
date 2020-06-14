@@ -83,7 +83,7 @@ const main = async (filePath) => {
         for (const article of clonedArticles) {
             if (article.language !== 'english') {
                 const [translation] = await translator.translate(article.title, defaultLanguage);
-                logger(`Translating ${article.language} to English.\n| Original => ${article.title}\nTranslated => ${translation}`);
+                logger(`Translating ${article.language} to English.\n Original => ${article.title} | Translated => ${translation}`);
                 article.title = translation;
             }
         }
